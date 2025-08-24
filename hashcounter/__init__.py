@@ -13,6 +13,7 @@ async def bump_string_counter(
     key_prefix: str,
     ttl_seconds: int = 600,
     client: Optional[redis.Redis] = None,
+    val: Optional[int] = None,
 ) -> int:
     """
     Increment a counter for a given string value in Redis with a specified TTL.
@@ -22,6 +23,7 @@ async def bump_string_counter(
         key_prefix (str): Prefix for the Redis key.
         ttl_seconds (int, optional): Time-to-live for the key in seconds. Defaults to 600.
         client (Optional[redis.Redis], optional): An existing Redis client. If None, a new client will be created. Defaults to None.
+        val (Optional[int], optional): If provided, sets the counter to this value if it does not exist. Otherwise, increments the counter. Defaults to None.
     Returns:
         int: The current count after incrementing.
     Raises:
@@ -48,7 +50,10 @@ async def bump_string_counter(
 
     try:
         async with client.pipeline(transaction=True) as pipe:
-            pipe.incr(key)
+            if val is not None:
+                pipe.setnx(key, val)
+            else:
+                pipe.incr(key)
             pipe.expire(key, ttl_seconds)
             res = await pipe.execute()
 

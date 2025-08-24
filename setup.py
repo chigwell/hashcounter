@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="hashcounter",
-    version="2025.8.241412",
+    version="2025.8.241445",
     author="Eugene Evstafev",
     author_email="chigwel@gmail.com",
     description="Atomic per-string counter with sliding TTL in Redis (async).",
